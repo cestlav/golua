@@ -17,7 +17,7 @@ func (self *BinaryReader) ReadByte() byte {
 
 func (self *BinaryReader) ReadBytes(size uint) []byte {
 	bytes := self.data[:size]
-	self.data = self.data[n:]
+	self.data = self.data[size:]
 	return bytes
 }
 
@@ -56,7 +56,7 @@ func (self *BinaryReader) ReadString() string {
 }
 
 func (self *BinaryReader)CheckHeader() {
-	if string(self.ReadBytes(4) != LUA_SIGNATURE) {
+	if string(self.ReadBytes(4)) != LUA_SIGNATURE {
 		panic("not a valid magic number")
 	} else if self.ReadByte() != LUAC_VERSION {
 		panic("invalid version")
@@ -96,7 +96,7 @@ func (self *BinaryReader) ReadProto(parentSource string) *ProtoType {
 		MaxStackSize: self.ReadByte(),
 		Code: self.ReadCode(),
 		Constants: self.ReadConstants(),
-		Upvalue: self.ReadUpvalues(),
+		Upvalues: self.ReadUpvalues(),
 		ProtoTypes: self.ReadProtos(source),
 		LineInfo: self.ReadLineInfo(),
 		LocalVariables: self.ReadLocalVariables(),
@@ -113,10 +113,11 @@ func (self *BinaryReader)ReadCode() []uint32 {
 }
 
 func (self *BinaryReader)ReadConstants() []interface{} {
-	constants := make([]interface{}, self.ReadUint32)
+	constants := make([]interface{}, self.ReadUint32())
 	for i := range constants {
 		constants[i] = self.ReadConstant()
 	}
+	return constants
 }
 
 func (self *BinaryReader)ReadConstant() interface{} {
@@ -156,7 +157,7 @@ func (self *BinaryReader)ReadProtos(parentSource string) []*ProtoType {
 }
 
 func (self *BinaryReader)ReadLineInfo() []uint32 {
-	lineInfo := make([]uint32, sefl.ReadUint32())
+	lineInfo := make([]uint32, self.ReadUint32())
 	for i := range lineInfo {
 		lineInfo[i] = self.ReadUint32()
 	}

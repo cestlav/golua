@@ -20,7 +20,7 @@ const (
 	TAG_NUMBER = 0x03
 	TAG_INTEGER = 0x13
 	TAG_SHORT_STR = 0x04
-	TAG_LONG_STR = 0x14	1
+	TAG_LONG_STR = 0x14
 )
 
 type BinaryChunk struct {
@@ -71,8 +71,8 @@ type LocalVariable struct {
 }
 
 func Undump(data []byte) *ProtoType {
-	reader = &Reader(data)
-	reader.checkHeader()
+	reader := &BinaryReader{data}
+	reader.CheckHeader()
 	reader.ReadByte()
 	return reader.ReadProto("")
 }
