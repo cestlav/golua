@@ -1,10 +1,13 @@
 package state
 
-import . "golua/api"
+import (
+	. "golua/api"
+	"golua/number"
+)
 
-type LuaValue interface {}
+type luaValue interface {}
 
-func typeOf(luaValue LuaValue) LuaType {
+func typeOf(luaValue luaValue) LuaType {
 	switch luaValue.(type) {
 	case nil: return LUA_TNIL
 	case bool: return LUA_TBOOLEAN
@@ -16,11 +19,48 @@ func typeOf(luaValue LuaValue) LuaType {
 	}
 }
 
-func convertToBoolean(v LuaValue) bool {
+func convertToBoolean(v luaValue) bool {
 	switch x := v.(type) {
 	case nil: return false
 	case bool: return v
 	default:
 		return true
 	}
+}
+
+func convertToFloat(v luaValue) (float64, bool) {
+	switch x := v.(type) {
+	case float64:
+		return x, true
+	case int64:
+		return float64(x), true
+	case string:
+		return number.ParseFloat(x)
+	default:
+		return 0, false
+	}
+}
+
+func convertToInteger(v luaValue) (int64, bool) {
+	switch x := v.(type) {
+	case int64:
+		return x, true
+	case float64:
+		return number.FloatToInteger(x)
+	case string:
+		return _stringToInteger(x)
+	default:
+		return 0, false
+	}
+}
+
+func _stringToInteger(s string) (int64, bool) {
+	if i, ok := number.ParseFloat(s); ok {
+		return i, ok
+	}
+	if f, ok := number.ParseInteger(s); ok {
+		return number.FloatToInteger(f)
+	}
+
+	return 0, false
 }

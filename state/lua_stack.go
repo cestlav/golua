@@ -1,13 +1,13 @@
 package state
 
 type luaStack struct {
-	slots []LuaValue
+	slots []luaValue
 	top int
 }
 
 func newLuaStack(size int) *luaStack {
 	return &luaStack{
-		slots: make([]LuaValue, size),
+		slots: make([]luaValue, size),
 		top:   0,
 	}
 }
@@ -19,7 +19,7 @@ func (s *luaStack) check(n int)  {
 	}
 }
 
-func (s *luaStack) push(value LuaValue)  {
+func (s *luaStack) push(value luaValue)  {
 	if s.top == len(s.slots) {
 		panic("stack overflow")
 	}
@@ -27,7 +27,7 @@ func (s *luaStack) push(value LuaValue)  {
 	s.top++
 }
 
-func (s *luaStack) pop() LuaValue {
+func (s *luaStack) pop() luaValue {
 	if s.top < 1 {
 		panic("stack underflow")
 	}
@@ -49,7 +49,7 @@ func (s *luaStack) isValid(index int) bool {
 	return absIndex > 0 && absIndex <= s.top
 }
 
-func (s *luaStack) get(index int) LuaValue {
+func (s *luaStack) get(index int) luaValue {
 	absindex := s.absIndex(index)
 	if absindex > 0 && absindex <= s.top {
 		return s.slots[absindex - 1]
@@ -57,7 +57,7 @@ func (s *luaStack) get(index int) LuaValue {
 	return nil
 }
 
-func (s *luaStack) set(index int, v LuaValue) {
+func (s *luaStack) set(index int, v luaValue) {
 	absIndex := s.absIndex(index)
 	if absIndex > 0 && absIndex <= s.top {
 		s.slots[absIndex - 1] = v
