@@ -22,7 +22,7 @@ func typeOf(luaValue luaValue) LuaType {
 func convertToBoolean(v luaValue) bool {
 	switch x := v.(type) {
 	case nil: return false
-	case bool: return v
+	case bool: return x
 	default:
 		return true
 	}
@@ -55,10 +55,10 @@ func convertToInteger(v luaValue) (int64, bool) {
 }
 
 func _stringToInteger(s string) (int64, bool) {
-	if i, ok := number.ParseFloat(s); ok {
+	if i, ok := number.ParseInteger(s); ok {
 		return i, ok
 	}
-	if f, ok := number.ParseInteger(s); ok {
+	if f, ok := number.ParseFloat(s); ok {
 		return number.FloatToInteger(f)
 	}
 

@@ -1,5 +1,7 @@
 package vm
 
+import "golua/api"
+
 type Instruction uint32
 
 const MAXARG_Bx = 1 << 18 - 1
@@ -45,4 +47,13 @@ func (i Instruction) ArgBMode() byte {
 
 func (i Instruction) ArgCMode() byte {
 	return opcodes[i.OpCode()].argCMode
+}
+
+func (i Instruction) Execute(vm api.LuaVM) {
+	action := opcodes[i.OpCode()].action
+	if (action == nil) {
+		action(i, vm)
+	} else {
+		panic(i.OpName())
+	}
 }
