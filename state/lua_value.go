@@ -15,6 +15,8 @@ func typeOf(luaValue luaValue) LuaType {
 	case float64: return LUA_TNUMBER
 	case string: return LUA_TSTRING
 	case *luaTable: return LUA_TTABLE
+	case *luaClosure: return LUA_TFUNCTION
+
 	default:
 		panic("invalid type")
 	}

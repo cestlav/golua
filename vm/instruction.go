@@ -51,7 +51,7 @@ func (i Instruction) ArgCMode() byte {
 
 func (i Instruction) Execute(vm api.LuaVM) {
 	action := opcodes[i.OpCode()].action
-	if (action == nil) {
+	if action != nil {
 		action(i, vm)
 	} else {
 		panic(i.OpName())

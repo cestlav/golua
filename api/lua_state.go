@@ -58,4 +58,7 @@ type LuaState interface {
 	SetField(int, string)
 	SetI(int, int64)
 
+	Load([]byte, string, string) int
+	Call(int, int)
+
 }

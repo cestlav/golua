@@ -1,19 +1,22 @@
 package state
 
-import "golua/binary"
-
 type luaState struct {
 	luaStack *luaStack
-
-	proto *binary.ProtoType
-	pc int
 }
 
-func NewLuaState(stackSize int, proto *binary.ProtoType) *luaState {
+func NewLuaState(stackSize int) *luaState {
 	return &luaState{
 		luaStack: newLuaStack(stackSize),
-
-		proto: proto,
-		pc: 0,
 	}
+}
+
+func (s *luaState) pushLuaStack(stack *luaStack) {
+	stack.prev = s.luaStack
+	s.luaStack = stack
+}
+
+func (s *luaState) popLuaStack()  {
+	stack := s.luaStack
+	s.luaStack = stack.prev
+	stack.prev = nil
 }
