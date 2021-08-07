@@ -107,7 +107,7 @@ var opcodes = []opcode {
 	opcode{0, 1, OpArgR, OpArgN, IABC, "UNM     ", unm},
 	opcode{0, 1, OpArgR, OpArgN, IABC, "BNOT    ", bnot},
 	opcode{0, 1, OpArgR, OpArgN, IABC, "NOT     ", not},
-	opcode{0, 1, OpArgR, OpArgN, IABC, "LEN     ", len},
+	opcode{0, 1, OpArgR, OpArgN, IABC, "LEN     ", length},
 	opcode{0, 1, OpArgR, OpArgR, IABC, "CONCAT  ", concat},
 	opcode{0, 0, OpArgR, OpArgN, IAsBx, "JMP     ", jmp},
 	opcode{1, 0, OpArgK, OpArgK, IABC, "EQ      ", eq},

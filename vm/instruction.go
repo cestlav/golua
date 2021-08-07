@@ -13,8 +13,8 @@ func (i Instruction) OpCode() int {
 
 func (i Instruction) ABC() (int, int, int) {
 	a := int(i >> 6 & 0xFF)
-	b := int(i >> 14 & 0x1FF)
-	c := int(i >> 23 & 0x1FF)
+	c := int(i >> 14 & 0x1FF)
+	b := int(i >> 23 & 0x1FF)
 	return a, b, c
 }
 

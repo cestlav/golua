@@ -26,3 +26,22 @@ func (s *luaState) GetRK(rk int)  {
 		s.PushValue(rk + 1)
 	}
 }
+
+func (s *luaState) RegisterCount() int {
+	return int(s.luaStack.closure.proto.MaxStackSize)
+}
+
+func (s *luaState) LoadVararg(n int)  {
+	if n < 0 {
+		n = len(s.luaStack.varargs)
+	}
+	s.luaStack.check(n)
+	s.luaStack.pushN(s.luaStack.varargs, n)
+}
+
+func (s *luaState) LoadProto(index int)  {
+	proto := s.luaStack.closure.proto.ProtoTypes[index]
+	closure := newLuaClosure(proto)
+	s.luaStack.push(closure)
+
+}

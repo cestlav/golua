@@ -14,8 +14,8 @@ func (s *luaState) Load(chunk []byte, chunkName, mode string) int {
 
 func (s *luaState) Call(nArgs, nResults int)  {
 	f := s.luaStack.get(-(nArgs + 1))
-	if _, ok := f.(*luaClosure); ok {
-		s.callLuaClosure(nArgs, nResults, f)
+	if c, ok := f.(*luaClosure); ok {
+		s.callLuaClosure(nArgs, nResults, c)
 	} else {
 		panic("error call instruction")
 	}
