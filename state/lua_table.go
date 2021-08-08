@@ -10,8 +10,8 @@ type luaTable struct {
 	luaMap map[luaValue]luaValue
 }
 
-func newLuaTable(nArr, nRec int) luaTable {
-	t := luaTable{}
+func newLuaTable(nArr, nRec int) *luaTable {
+	t := &luaTable{}
 
 	if nArr > 0 {
 		t.luaArray = make([]luaValue, 0, nArr)

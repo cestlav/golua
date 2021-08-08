@@ -1,19 +1,24 @@
 package state
 
+import "golua/api"
+
 type luaStack struct {
 	slots []luaValue
 	top int
 
 	prev *luaStack
-	closure *luaClosure
+	closure *closure
 	varargs []luaValue
 	pc int
+
+	state *luaState
 }
 
-func newLuaStack(size int) *luaStack {
+func newLuaStack(size int, s *luaState) *luaStack {
 	return &luaStack{
 		slots: make([]luaValue, size),
 		top:   0,
+		state: s,
 	}
 }
 
@@ -43,18 +48,24 @@ func (s *luaStack) pop() luaValue {
 }
 
 func (s *luaStack) absIndex(index int) int {
-	if index >= 0 {
+	if index >= 0 || index <= api.LUA_REGISTRYINDEX {
 		return index
 	}
 	return index + s.top +1
 }
 
 func (s *luaStack) isValid(index int) bool {
+	if index == api.LUA_REGISTRYINDEX {
+		return true
+	}
 	absIndex := s.absIndex(index)
 	return absIndex > 0 && absIndex <= s.top
 }
 
 func (s *luaStack) get(index int) luaValue {
+	if index == api.LUA_REGISTRYINDEX {
+		return s.state.registry
+	}
 	absindex := s.absIndex(index)
 	if absindex > 0 && absindex <= s.top {
 		return s.slots[absindex - 1]
@@ -63,6 +74,10 @@ func (s *luaStack) get(index int) luaValue {
 }
 
 func (s *luaStack) set(index int, v luaValue) {
+	if index == api.LUA_REGISTRYINDEX {
+		s.state.registry = v.(*luaTable)
+		return
+	}
 	absIndex := s.absIndex(index)
 	if absIndex > 0 && absIndex <= s.top {
 		s.slots[absIndex - 1] = v

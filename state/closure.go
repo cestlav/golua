@@ -1,13 +1,23 @@
 package state
 
-import "golua/binary"
+import (
+	"golua/api"
+	"golua/binary"
+)
 
-type luaClosure struct {
+type closure struct {
 	proto *binary.ProtoType
+	goFunc api.GoFunction
 }
 
-func newLuaClosure(proto *binary.ProtoType) *luaClosure {
-	return &luaClosure{
+func newLuaClosure(proto *binary.ProtoType) *closure {
+	return &closure{
 		proto: proto,
+	}
+}
+
+func newGoClosure(f api.GoFunction) *closure {
+	return &closure{
+		goFunc: f,
 	}
 }

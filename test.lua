@@ -1,6 +1,1 @@
-function f(a)
-    local b = a + a
-    return a, b
-end
-
-f(3)
+print("hello world")

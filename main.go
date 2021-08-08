@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"golua/api"
 	"golua/state"
 	"io/ioutil"
 )
@@ -12,9 +13,19 @@ func main()  {
 	if err != nil {
 		panic("err binary")
 	}
-	ls := state.NewLuaState(20)
+	ls := state.NewLuaState()
+	ls.Register("print", print)
 	ls.Load(data, "luac.out", "b")
-	fmt.Printf("%v\n", )
-	//ls.Call(0, 0)
+
+	ls.Call(0, 0)
 	fmt.Println("hello world")
+}
+
+func print(ls api.LuaState) int {
+	nArgs := ls.GetTop()
+	for i := 1; i < nArgs; i++ {
+		fmt.Printf("%v\n", ls.ToString(i))
+	}
+	fmt.Println("fuck world")
+	return 0
 }

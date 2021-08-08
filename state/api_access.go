@@ -158,3 +158,19 @@ func (s *luaState) ToStringX(idx int) (string, bool) {
 		return "", false
 	}
 }
+
+func (s *luaState) IsGoFunction(index int) bool {
+	v := s.luaStack.get(index)
+	if c, ok := v.(*closure); ok {
+		return c.goFunc != nil
+	}
+	return false
+}
+
+func (s *luaState) ToGoFunction(index int) GoFunction {
+	v := s.luaStack.get(index)
+	if c , ok := v.(*closure); ok {
+		return c.goFunc
+	}
+	return nil
+}

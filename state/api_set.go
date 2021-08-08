@@ -1,5 +1,7 @@
 package state
 
+import . "golua/api"
+
 func (s *luaState) SetTable(idx int) {
 	t := s.luaStack.get(idx)
 	v := s.luaStack.pop()
@@ -26,4 +28,15 @@ func (s *luaState) setTable(t, k, v luaValue) {
 	}
 
 	panic("not a table!")
+}
+
+func (s *luaState) SetGlobal(name string) {
+	t := s.registry.get(LUA_RIDX_GLOBALS)
+	v := s.luaStack.pop()
+	s.setTable(t, name, v)
+}
+
+func (s *luaState) Register(name string, f GoFunction) {
+	s.PushGoFunction(f)
+	s.SetGlobal(name)
 }
