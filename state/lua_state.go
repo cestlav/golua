@@ -21,7 +21,7 @@ func (s *luaState) pushLuaStack(stack *luaStack) {
 	s.luaStack = stack
 }
 
-func (s *luaState) popLuaStack()  {
+func (s *luaState) popLuaStack() {
 	stack := s.luaStack
 	s.luaStack = stack.prev
 	stack.prev = nil
