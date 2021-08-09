@@ -174,3 +174,15 @@ func (s *luaState) ToGoFunction(index int) GoFunction {
 	}
 	return nil
 }
+
+func (s *luaState) RawLen(idx int) uint {
+	val := s.luaStack.get(idx)
+	switch x := val.(type) {
+	case string:
+		return uint(len(x))
+	case *luaTable:
+		return uint(x.len())
+	default:
+		return 0
+	}
+}

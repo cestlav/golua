@@ -1,6 +1,7 @@
 package state
 
 import (
+	"fmt"
 	. "golua/api"
 	"golua/number"
 )
@@ -66,4 +67,47 @@ func _stringToInteger(s string) (int64, bool) {
 	}
 
 	return 0, false
+}
+
+func setMetatable(v luaValue, mt *luaTable, ls *luaState)  {
+	if t, ok := v.(*luaTable); ok {
+		t.metatable = mt
+		return
+	}
+	key := fmt.Sprintf("_MT%d", typeOf(v))
+	ls.registry.put(key, mt)
+}
+
+func getMetatable(v luaValue, ls *luaState) *luaTable {
+	if t, ok := v.(*luaTable); ok {
+		return t.metatable
+	}
+
+	key := fmt.Sprintf("_MT%d", typeOf(v))
+	if mt := ls.registry.get(key); mt != nil {
+		return mt.(*luaTable)
+	}
+	return nil
+}
+
+func callMetaMethod(a, b luaValue, mmName string, ls *luaState) (luaValue, bool)  {
+	var mm luaValue
+	if mm = getMetaField(a, mmName, ls); mm == nil {
+		if mm = getMetaField(b, mmName, ls); mm == nil {
+			return nil,false
+		}
+	}
+	ls.luaStack.check(4)
+	ls.luaStack.push(mm)
+	ls.luaStack.push(a)
+	ls.luaStack.push(b)
+	ls.Call(2, 1)
+	return ls.luaStack.pop(), true
+}
+
+func getMetaField(v luaValue, fieldName string, ls *luaState) luaValue {
+	if mt := getMetatable(v, ls); mt != nil {
+		return mt.get(fieldName)
+	}
+	return nil
 }

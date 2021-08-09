@@ -78,4 +78,12 @@ type LuaState interface {
 
 	PushGoClosure(GoFunction, int)
 
+	GetMetaTable(int) bool
+	SetMetaTable(int)
+	RawLen(int) uint
+	RawEqual(int, int) bool
+	RawGet(int) LuaType
+	RawSet(int)
+	RawGetI(int, int64) LuaType
+	RawSetI(int, int64)
 }

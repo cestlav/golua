@@ -8,6 +8,7 @@ import (
 type luaTable struct {
 	luaArray []luaValue
 	luaMap map[luaValue]luaValue
+	metatable *luaTable
 }
 
 func newLuaTable(nArr, nRec int) *luaTable {
@@ -22,6 +23,11 @@ func newLuaTable(nArr, nRec int) *luaTable {
 	}
 
 	return t
+}
+
+func (self *luaTable) hasMetaField(fieldName string) bool {
+	return self.metatable != nil &&
+		self.metatable.get(fieldName) != nil
 }
 
 func (t *luaTable) len() int {
