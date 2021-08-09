@@ -6,6 +6,10 @@ type CompareOp = int
 
 type GoFunction func (LuaState) int
 
+func LuaUpValueIndex(i int) int {
+	return LUA_REGISTRYINDEX - 1
+}
+
 type LuaState interface {
 	GetTop() int
 	AbsIndex(int) int
@@ -71,5 +75,7 @@ type LuaState interface {
 	GetGlobal(string) LuaType
 	SetGlobal(string)
 	Register(string, GoFunction)
+
+	PushGoClosure(GoFunction, int)
 
 }

@@ -12,4 +12,6 @@ type LuaVM interface {
 	RegisterCount() int
 	LoadVararg(int)
 	LoadProto(int)
+
+	CloseUpValues(int)
 }

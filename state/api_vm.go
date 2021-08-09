@@ -44,4 +44,31 @@ func (s *luaState) LoadProto(index int)  {
 	closure := newLuaClosure(proto)
 	s.luaStack.push(closure)
 
+	for i, uvInfo := range proto.UpValues {
+		uvIndex := int(uvInfo.Index)
+		if uvInfo.InStack == 1 {
+			if s.luaStack.openuvs == nil {
+				s.luaStack.openuvs = make(map[int]*upValue)
+			}
+
+			if openuv, found := s.luaStack.openuvs[uvIndex]; found {
+				closure.upValues[i] = openuv
+			} else {
+				closure.upValues[i] = &upValue{&s.luaStack.slots[uvIndex]}
+				s.luaStack.openuvs[uvIndex] = closure.upValues[i]
+			}
+		} else {
+			closure.upValues[i] = s.luaStack.closure.upValues[uvIndex]
+		}
+	}
+}
+
+func (s *luaState) CloseUpValues(n int)  {
+	for i, openuv := range s.luaStack.openuvs {
+		if i >= n - 1 {
+			v := *openuv.value
+			openuv.value = &v
+			delete(s.luaStack.openuvs, i)
+		}
+	}
 }

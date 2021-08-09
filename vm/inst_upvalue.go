@@ -3,12 +3,35 @@ package vm
 import . "golua/api"
 
 func getTabUp(i Instruction, vm LuaVM)  {
-	a, _, c := i.ABC()
+	a, b, c := i.ABC()
+	a += 1
+	b += 1
+
+	vm.GetRK(c)
+	vm.GetTable(LuaUpValueIndex(b))
+	vm.Replace(a)
+}
+
+func setTabUp(i Instruction, vm LuaVM) {
+	a, b, c := i.ABC()
 	a += 1
 
-	vm.PushGlobalTable()
+	vm.GetRK(b)
 	vm.GetRK(c)
-	vm.GetTable(-2)
-	vm.Replace(a)
-	vm.Pop(1)
+	vm.SetTable(LuaUpValueIndex(a))
+}
+
+func getUpValue(i Instruction, vm LuaVM)  {
+	a, b, _ := i.ABC()
+	a += 1
+	b += 1
+	vm.Copy(LuaUpValueIndex(b), a)
+}
+
+func setUpValue(i Instruction, vm LuaVM)  {
+	a, b, _ := i.ABC()
+	a += 1
+	b += 1
+
+	vm.Copy(a, LuaUpValueIndex(b))
 }

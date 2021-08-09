@@ -1,14 +1,20 @@
 package state
 
 import (
+	"golua/api"
 	"golua/binary"
 	"golua/vm"
 )
 
 func (s *luaState) Load(chunk []byte, chunkName, mode string) int {
-	proro := binary.Undump(chunk)
-	c := newLuaClosure(proro)
+	proto := binary.Undump(chunk)
+	c := newLuaClosure(proto)
 	s.luaStack.push(c)
+
+	if len(proto.UpValues) > 0 {
+		env := s.registry.get(api.LUA_RIDX_GLOBALS)
+		c.upValues[0] = &upValue{&env}
+	}
 	return 0
 }
 

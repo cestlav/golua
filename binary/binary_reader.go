@@ -88,19 +88,19 @@ func (r *BinaryReader) ReadProto(parentSource string) *ProtoType {
 	}
 
 	return &ProtoType {
-		Source: source,
-		LineDefined: r.ReadUint32(),
+		Source:          source,
+		LineDefined:     r.ReadUint32(),
 		LastLineDefined: r.ReadUint32(),
-		NumParams: r.ReadByte(),
-		IsVararg: r.ReadByte(),
-		MaxStackSize: r.ReadByte(),
-		Code: r.ReadCode(),
-		Constants: r.ReadConstants(),
-		Upvalues: r.ReadUpvalues(),
-		ProtoTypes: r.ReadProtos(source),
-		LineInfo: r.ReadLineInfo(),
-		LocalVariables: r.ReadLocalVariables(),
-		UpvalueNames: r.ReadUpvalueNames(),
+		NumParams:       r.ReadByte(),
+		IsVararg:        r.ReadByte(),
+		MaxStackSize:    r.ReadByte(),
+		Code:            r.ReadCode(),
+		Constants:       r.ReadConstants(),
+		UpValues:        r.ReadUpvalues(),
+		ProtoTypes:      r.ReadProtos(source),
+		LineInfo:        r.ReadLineInfo(),
+		LocalVariables:  r.ReadLocalVariables(),
+		UpvalueNames:    r.ReadUpvalueNames(),
 	}
 }
 
@@ -137,12 +137,12 @@ func (r *BinaryReader) ReadConstant() interface{} {
 	}
 }
 
-func (r *BinaryReader) ReadUpvalues() []Upvalue {
-	upvalues := make([]Upvalue, r.ReadUint32())
+func (r *BinaryReader) ReadUpvalues() []UpValue {
+	upvalues := make([]UpValue, r.ReadUint32())
 	for i := range upvalues {
-		upvalues[i] = Upvalue {
-			Instack: r.ReadByte(),
-			Index: r.ReadByte(),
+		upvalues[i] = UpValue{
+			InStack: r.ReadByte(),
+			Index:   r.ReadByte(),
 		}
 	}
 	return upvalues

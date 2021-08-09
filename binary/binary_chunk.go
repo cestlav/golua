@@ -52,15 +52,15 @@ type ProtoType struct {
 	MaxStackSize    byte
 	Code            []uint32
 	Constants       []interface{}
-	Upvalues        []Upvalue
+	UpValues        []UpValue
 	ProtoTypes      []*ProtoType
 	LineInfo        []uint32
 	LocalVariables  []LocalVariable
 	UpvalueNames    []string
 }
 
-type Upvalue struct {
-	Instack byte
+type UpValue struct {
+	InStack byte
 	Index   byte
 }
 
