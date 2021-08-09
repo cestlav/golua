@@ -9,6 +9,8 @@ type luaTable struct {
 	luaArray []luaValue
 	luaMap map[luaValue]luaValue
 	metatable *luaTable
+	keys map[luaValue]luaValue
+	changed bool
 }
 
 func newLuaTable(nArr, nRec int) *luaTable {
@@ -107,6 +109,32 @@ func (t *luaTable) _expandArray() {
 			t.luaArray = append(t.luaArray, val)
 		} else {
 			break
+		}
+	}
+}
+
+func (s *luaTable)nextKey(key luaValue) luaValue {
+	if s.keys != nil || key == nil {
+		s.initKeys()
+		s.changed = false
+	}
+	return s.keys[key]
+}
+
+func (s *luaTable) initKeys()  {
+	s.keys = make(map[luaValue]luaValue)
+	var key luaValue = nil
+	for i, v := range s.luaArray {
+		if v != nil {
+			s.keys[key] = int64(i + 1)
+			key = int64(i + 1)
+		}
+	}
+
+	for k, v := range s.luaMap {
+		if v != nil {
+			s.keys[key] = k
+			key = k
 		}
 	}
 }

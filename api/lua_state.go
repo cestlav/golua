@@ -86,4 +86,9 @@ type LuaState interface {
 	RawSet(int)
 	RawGetI(int, int64) LuaType
 	RawSetI(int, int64)
+
+	Next(int) bool
+
+	Error() int
+	PCall(nArgs, nResults, msgh int) int
 }

@@ -38,3 +38,22 @@ func (s *luaState) Concat(n int)  {
 		}
 	}
 }
+
+func (s *luaState) Next(index int) bool {
+	val := s.luaStack.get(index)
+	if t, ok := val.(*luaTable); ok {
+		key := s.luaStack.pop()
+		if nextKey := t.nextKey(key); nextKey != nil {
+			s.luaStack.push(nextKey)
+			s.luaStack.push(t.get(nextKey))
+			return true
+		}
+		return false
+	}
+	panic("table expected!")
+}
+
+func (s *luaState) Error() int {
+	err := s.luaStack.pop()
+	panic(err)
+}
