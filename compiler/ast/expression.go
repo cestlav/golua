@@ -36,7 +36,7 @@ type ConcatExpression struct {
 	Expressions []Expression
 }
 
-type TableConstructionExpression struct {
+type TableConstructorExpression struct {
 	Line int
 	LastLine int
 	KeyExpressions []Expression

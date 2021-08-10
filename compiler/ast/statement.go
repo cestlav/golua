@@ -34,6 +34,7 @@ type ForNumStatement struct {
 	LineOfDo  int
 	VarName   string
 	InitExpression   Expression
+	LimitExpression Expression
 	StepExpression  Expression
 	Block     *Block
 }

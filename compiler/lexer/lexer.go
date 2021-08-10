@@ -39,6 +39,10 @@ func NewLexer(chunk, chunkName string) *Lexer {
 	}
 }
 
+func (l *Lexer)CurrentLine() int {
+	return l.currentLine
+}
+
 func (l *Lexer) NextToken() (line, kind int, token string) {
 	if l.nextTokenLine > 0 {
 		line = l.nextTokenLine
