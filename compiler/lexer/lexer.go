@@ -20,20 +20,20 @@ var reHexEscapeSeq = regexp.MustCompile(`^\\x[0-9a-fA-F]{2}`)
 var reUnicodeEscapeSeq = regexp.MustCompile(`^\\u\{[0-9a-fA-F]+\}`)
 
 type Lexer struct {
-	srcCode     string
-	srcName     string
-	currentLine int
-	nextToken string
+	chunk         string
+	chunkName     string
+	currentLine   int
+	nextToken     string
 	nextTokenKind int
 	nextTokenLine int
 }
 
 func NewLexer(chunk, chunkName string) *Lexer {
 	return &Lexer{
-		srcCode:     chunk,
-		srcName:     chunkName,
-		currentLine: 1,
-		nextToken: "",
+		chunk:         chunk,
+		chunkName:     chunkName,
+		currentLine:   1,
+		nextToken:     "",
 		nextTokenKind: 0,
 		nextTokenLine: 0,
 	}
@@ -50,11 +50,11 @@ func (l *Lexer) NextToken() (line, kind int, token string) {
 	}
 
 	l.skipWhiteSpaces()
-	if len(l.srcCode) == 0 {
+	if len(l.chunk) == 0 {
 		return l.currentLine, TOKEN_EOF, "EOF"
 	}
 
-	switch l.srcCode[0] {
+	switch l.chunk[0] {
 	case ';':
 		l.next(1)
 		return l.currentLine, TOKEN_SEP_SEMI, ";"
@@ -161,7 +161,7 @@ func (l *Lexer) NextToken() (line, kind int, token string) {
 		} else if l.test("..") {
 			l.next(2)
 			return l.currentLine, TOKEN_OP_CONCAT, ".."
-		} else if len(l.srcCode) == 1 || !isDigit(l.srcCode[1]) {
+		} else if len(l.chunk) == 1 || !isDigit(l.chunk[1]) {
 			l.next(1)
 			return l.currentLine, TOKEN_SEP_DOT, "."
 		}
@@ -176,7 +176,7 @@ func (l *Lexer) NextToken() (line, kind int, token string) {
 		return l.currentLine, TOKEN_STRING, l.scanShortString()
 	}
 
-	c := l.srcCode[0]
+	c := l.chunk[0]
 	if c == '.' || isDigit(c) {
 		token := l.scanNumber()
 		return l.currentLine, TOKEN_NUMBER, token
@@ -203,7 +203,7 @@ func (l *Lexer) scanNumber() string {
 }
 
 func (l *Lexer) scan(re *regexp.Regexp) string {
-	if token := re.FindString(l.srcCode); token != "" {
+	if token := re.FindString(l.chunk); token != "" {
 		l.next(len(token))
 		return token
 	}
@@ -212,29 +212,29 @@ func (l *Lexer) scan(re *regexp.Regexp) string {
 
 func (l *Lexer) error(f string, a ...interface{}) {
 	err := fmt.Sprintf(f, a...)
-	err = fmt.Sprintf("%s:%d: %s", l.srcName, l.currentLine, err)
+	err = fmt.Sprintf("%s:%d: %s", l.chunkName, l.currentLine, err)
 	panic(err)
 }
 
 func (l *Lexer) test(s string) bool {
-	return strings.HasPrefix(l.srcCode, s)
+	return strings.HasPrefix(l.chunk, s)
 }
 
 func (l *Lexer) next(n int) {
-	l.srcCode = l.srcCode[n:]
+	l.chunk = l.chunk[n:]
 }
 
 func (l *Lexer) skipWhiteSpaces() {
-	for len(l.srcCode) > 0 {
+	for len(l.chunk) > 0 {
 		if l.test("--") {
 			l.skipComment()
 		} else if l.test("\r\n") || l.test("\n\r") {
 			l.next(2)
 			l.currentLine += 1
-		} else if isNewLine(l.srcCode[0]) {
+		} else if isNewLine(l.chunk[0]) {
 			l.next(1)
 			l.currentLine += 1
-		} else if isWhiteSpace(l.srcCode[0]) {
+		} else if isWhiteSpace(l.chunk[0]) {
 			l.next(1)
 		} else {
 			break
@@ -243,19 +243,19 @@ func (l *Lexer) skipWhiteSpaces() {
 }
 
 func (l *Lexer) scanLongString() string {
-	openingLongBracket := reOpeningLongBracket.FindString(l.srcCode)
+	openingLongBracket := reOpeningLongBracket.FindString(l.chunk)
 	if openingLongBracket == "" {
 		l.error("invalid long string delimiter near '%s'",
-			l.srcCode[0:2])
+			l.chunk[0:2])
 	}
 
 	closingLongBracket := strings.Replace(openingLongBracket, "[", "]", -1)
-	closingLongBracketIdx := strings.Index(l.srcCode, closingLongBracket)
+	closingLongBracketIdx := strings.Index(l.chunk, closingLongBracket)
 	if closingLongBracketIdx < 0 {
 		l.error("unfinished long string or comment")
 	}
 
-	str := l.srcCode[len(openingLongBracket):closingLongBracketIdx]
+	str := l.chunk[len(openingLongBracket):closingLongBracketIdx]
 	l.next(closingLongBracketIdx + len(closingLongBracket))
 
 	str = reNewLine.ReplaceAllString(str, "\n")
@@ -268,7 +268,7 @@ func (l *Lexer) scanLongString() string {
 }
 
 func (l *Lexer) scanShortString() string {
-	if str := reShortStr.FindString(l.srcCode); str != "" {
+	if str := reShortStr.FindString(l.chunk); str != "" {
 		l.next(len(str))
 		str = str[1 : len(str)-1]
 		if strings.Index(str, `\`) >= 0 {
@@ -286,14 +286,14 @@ func (l *Lexer) skipComment() {
 
 	// long comment ?
 	if l.test("[") {
-		if reOpeningLongBracket.FindString(l.srcCode) != "" {
+		if reOpeningLongBracket.FindString(l.chunk) != "" {
 			l.scanLongString()
 			return
 		}
 	}
 
 	// short comment
-	for len(l.srcCode) > 0 && !isNewLine(l.srcCode[0]) {
+	for len(l.chunk) > 0 && !isNewLine(l.chunk[0]) {
 		l.next(1)
 	}
 }
