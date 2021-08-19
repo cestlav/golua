@@ -6,7 +6,7 @@ type NilExpression struct {Line int}
 
 type TrueExpression struct {Line int}
 
-type FalseExpression struct {Lint int}
+type FalseExpression struct { Line int}
 
 type VarargExpression struct {Line int}
 
@@ -14,7 +14,7 @@ type IntegerExpression struct {Line int; Value int64}
 
 type FloatExpression struct {Line int; Value float64}
 
-type StringExpression struct {Line int; Value string}
+type StringExpression struct {Line int; Str string}
 
 type NameExpression struct {Line int; Name string}
 

@@ -12,7 +12,7 @@ type GotoStatement struct {Name string}
 
 type DoStatement struct {Block *Block}
 
-type FuncCallStatement = FunctionCallExpression
+type FunctionCallStatement = FunctionCallExpression
 
 type WhileStatement struct {
 	Expression   Expression
@@ -25,8 +25,8 @@ type RepeatStatement struct {
 }
 
 type IfStatement struct {
-	Expression []Expression
-	Blocks []*Block
+	Expressions []Expression
+	Blocks      []*Block
 }
 
 type ForNumStatement struct {
